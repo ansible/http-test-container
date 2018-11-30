@@ -3,11 +3,13 @@ FROM nginx:1.13.8-alpine
 
 ADD constraints.txt /root/constraints.txt
 
+ENV PYTHONDONTWRITEBYTECODE=1
+
 # The following packages are required to get httpbin/brotlipy/cffi installed
 #     openssl-dev python2-dev libffi-dev gcc libstdc++ make musl-dev
 # Symlinking /usr/lib/libstdc++.so.6 to /usr/lib/libstdc++.so is specifically required for brotlipy
 RUN set -x && \
-    apk add --no-cache openssl ca-certificates py-pip openssl-dev python2-dev libffi-dev gcc libstdc++ make musl-dev && \
+    apk add --no-cache openssl ca-certificates python2 py-setuptools py-pip openssl-dev python2-dev libffi-dev gcc libstdc++ make musl-dev && \
     update-ca-certificates && \
     ln -s /usr/lib/libstdc++.so.6 /usr/lib/libstdc++.so && \
     mkdir -p /root/ca/certs /root/ca/private /root/ca/newcerts && \
@@ -31,8 +33,10 @@ RUN set -x && \
     cp /root/ca/cacert.pem /usr/share/nginx/html/cacert.pem && \
     cp /root/ca/client.ansible.http.tests-cert.pem /usr/share/nginx/html/client.pem && \
     cp /root/ca/private/client.ansible.http.tests-key.pem /usr/share/nginx/html/client.key && \
-    pip install -c /root/constraints.txt gunicorn httpbin && \
-    apk del openssl-dev python2-dev libffi-dev gcc libstdc++ make musl-dev
+    pip install --no-compile -c /root/constraints.txt gunicorn httpbin && \
+    apk del ca-certificates py-pip openssl-dev python2-dev libffi-dev gcc libstdc++ make musl-dev && \
+    rm -rf /root/.cache/pip && \
+    find /usr/lib/python2.7 -type f -regex ".*\.py[co]" -delete
 
 ADD services.sh /services.sh
 ADD nginx.sites.conf /etc/nginx/conf.d/default.conf

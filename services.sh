@@ -1,3 +1,3 @@
 #!/bin/sh
-gunicorn -D httpbin:app
-nginx -g "daemon off;"
+/usr/bin/gunicorn -D httpbin:app
+/usr/sbin/nginx -g "daemon off;"
