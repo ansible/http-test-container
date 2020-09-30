@@ -33,10 +33,11 @@ RUN set -x && \
     cp /root/ca/client.ansible.http.tests-cert.pem /usr/share/nginx/html/client.pem && \
     cp /root/ca/private/client.ansible.http.tests-key.pem /usr/share/nginx/html/client.key && \
     chmod 644 /usr/share/nginx/html/* && \
-    pip install --no-cache-dir --no-compile -c /root/constraints.txt gunicorn httpbin && \
+    pip3 install --no-cache-dir --no-compile -c /root/constraints.txt gunicorn httpbin && \
     apk del openssl-dev py3-pip py3-wheel python3-dev libffi-dev gcc libstdc++ make musl-dev && \
     rm -rf /root/.cache/pip && \
-    find /usr/lib/python3.8 -type f -regex ".*\.py[co]" -delete
+    find /usr/lib/python3.8 -type f -regex ".*\.py[co]" -delete && \
+    find /usr/lib/python3.8 -type d -name "__pycache__" -delete
 
 ADD services.sh /services.sh
 ADD nginx.sites.conf /etc/nginx/conf.d/default.conf
