@@ -36,7 +36,7 @@ RUN set -x && \
     openssl req -new -nodes -out /root/ca/client.ansible.http.tests-req.pem -keyout /root/ca/private/client.ansible.http.tests-key.pem -config /etc/ssl/openssl.cnf \
         -subj "/C=US/ST=North Carolina/L=Durham/O=Ansible/CN=client.ansible.http.tests" && \
     yes | openssl ca -config /etc/ssl/openssl.cnf -days 3650 -out /root/ca/client.ansible.http.tests-cert.pem -infiles /root/ca/client.ansible.http.tests-req.pem && \
-    openssl req -new -nodes -out /root/ca2/self-signed.ansible.http.tests-req.pem -keyout /root/ca2/private/self-signed.ansible.http.tests-key.pem -config /etc/ssl/openssl.cnf \
+    openssl req -new -nodes -out /root/ca2/self-signed.ansible.http.tests-req.pem -keyout /root/ca2/private/self-signed.ansible.http.tests-key.pem -config /etc/ssl/openssl_ca2.cnf \
         -subj "/C=US/ST=North Carolina/L=Durham/O=Ansible/CN=self-signed.ansible.http.tests" && \
     yes | openssl ca -config /etc/ssl/openssl_ca2.cnf -days 3650 -out /root/ca2/self-signed.ansible.http.tests-cert.pem -infiles /root/ca2/self-signed.ansible.http.tests-req.pem && \
     cp /root/ca/cacert.pem /usr/share/nginx/html/cacert.pem && \
