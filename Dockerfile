@@ -12,11 +12,18 @@ RUN set -x && \
     update-ca-certificates && \
     ln -s /usr/lib/libstdc++.so.6 /usr/lib/libstdc++.so && \
     mkdir -p /root/ca/certs /root/ca/private /root/ca/newcerts && \
+    mkdir -p /root/ca2/certs /root/ca2/private /root/ca2/newcerts && \
     echo 1000 > /root/ca/serial && \
+    echo 1000 > /root/ca2/serial && \
     touch /root/ca/index.txt && \
+    touch /root/ca2/index.txt && \
+    cp /etc/ssl/openssl.cnf /etc/ssl/openssl_ca2.cnf && \
     sed -i 's/\.\/demoCA/\/root\/ca/g' /etc/ssl/openssl.cnf && \
+    sed -i 's/\.\/demoCA/\/root\/ca2/g' /etc/ssl/openssl_ca2.cnf && \
     openssl req -new -x509 -days 3650 -nodes -extensions v3_ca -keyout /root/ca/private/cakey.pem -out /root/ca/cacert.pem \
         -subj "/C=US/ST=North Carolina/L=Durham/O=Ansible/CN=ansible.http.tests" && \
+    openssl req -new -x509 -days 3650 -nodes -extensions v3_ca -keyout /root/ca2/private/cakey.pem -out /root/ca2/cacert.pem \
+        -subj "/C=US/ST=North Carolina/L=Durham/O=Ansible/CN=ca2.ansible.http.tests" && \
     openssl req -new -nodes -out /root/ca/ansible.http.tests-req.pem -keyout /root/ca/private/ansible.http.tests-key.pem \
         -subj "/C=US/ST=North Carolina/L=Durham/O=Ansible/CN=ansible.http.tests" && \
     yes | openssl ca -config /etc/ssl/openssl.cnf -days 3650 -out /root/ca/ansible.http.tests-cert.pem -infiles /root/ca/ansible.http.tests-req.pem && \
@@ -29,7 +36,11 @@ RUN set -x && \
     openssl req -new -nodes -out /root/ca/client.ansible.http.tests-req.pem -keyout /root/ca/private/client.ansible.http.tests-key.pem -config /etc/ssl/openssl.cnf \
         -subj "/C=US/ST=North Carolina/L=Durham/O=Ansible/CN=client.ansible.http.tests" && \
     yes | openssl ca -config /etc/ssl/openssl.cnf -days 3650 -out /root/ca/client.ansible.http.tests-cert.pem -infiles /root/ca/client.ansible.http.tests-req.pem && \
+    openssl req -new -nodes -out /root/ca2/self-signed.ansible.http.tests-req.pem -keyout /root/ca2/private/self-signed.ansible.http.tests-key.pem -config /etc/ssl/openssl_ca2.cnf \
+        -subj "/C=US/ST=North Carolina/L=Durham/O=Ansible/CN=self-signed.ansible.http.tests" && \
+    yes | openssl ca -config /etc/ssl/openssl_ca2.cnf -days 3650 -out /root/ca2/self-signed.ansible.http.tests-cert.pem -infiles /root/ca2/self-signed.ansible.http.tests-req.pem && \
     cp /root/ca/cacert.pem /usr/share/nginx/html/cacert.pem && \
+    cp /root/ca2/cacert.pem /usr/share/nginx/html/ca2cert.pem && \
     cp /root/ca/client.ansible.http.tests-cert.pem /usr/share/nginx/html/client.pem && \
     cp /root/ca/private/client.ansible.http.tests-key.pem /usr/share/nginx/html/client.key && \
     chmod 644 /usr/share/nginx/html/* && \
