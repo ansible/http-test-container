@@ -20,6 +20,9 @@ tar -xzC /usr/src -f "${SPNEGO_TAR}"
 
 cd "${NGINX_SRC}"
 
+# Hack to ensure the module compile options match the server.
+export CFLAGS=-DNGX_HTTP_HEADERS=1
+
 # shellcheck disable=SC2086
 ./configure ${NGINX_CONFIG} --add-dynamic-module="${SPNEGO_SRC}"
 
