@@ -25,6 +25,18 @@ cd "${NGINX_SRC}"
 
 make modules
 
+MODULE_SIGNATURE="$(strings "objs/${MODULE_NAME}" | grep -E '[01]{30,}')"
+SERVER_SIGNATURE="$(strings /usr/sbin/nginx | grep -E '[01]{30,}')"
+
+if [ "${MODULE_SIGNATURE}" != "${SERVER_SIGNATURE}" ]; then
+    echo "The configured module options do not match the server:"
+    echo "Module: ${MODULE_SIGNATURE}"
+    echo "Server: ${SERVER_SIGNATURE}"
+    echo "See https://github.com/nginx/nginx/blob/release-${NGINX_VERSION}/src/core/ngx_module.h to decode the signature."
+    echo "The mismatch could be due to configuration options or missing dependencies."
+    exit 1
+fi
+
 cp "objs/${MODULE_NAME}" "${MODULE_DIR}"
 
 echo "load_module ${MODULE_DIR}/${MODULE_NAME};" > /usr/src/nginx.conf
