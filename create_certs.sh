@@ -15,7 +15,7 @@ create_ca() {
     mkdir -p "${ca}/certs" "${ca}/private" "${ca}/newcerts"
     echo 1000 > "${ca}/serial"
     touch "${ca}/index.txt"
-    sed "s|\./demoCA|${ca}|g" /etc/ssl/openssl.cnf > "${ca}/openssl.cnf"
+    sed "s|\./demoCA|${ca}|g" /etc/ssl/openssl.cnf | sed "s|# keyUsage = cRLSign, keyCertSign|keyUsage = cRLSign, keyCertSign|g" > "${ca}/openssl.cnf"
     openssl req -new -x509 -nodes -extensions v3_ca \
       -config "${ca}/openssl.cnf" -days "${days}" -subj "${subj}/CN=${name}" -out "${ca}/cacert.pem" -keyout "${ca}/private/cakey.pem"
 }
