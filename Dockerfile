@@ -1,4 +1,4 @@
-FROM quay.io/bedrock/alpine:3.20.0 AS base
+FROM public.ecr.aws/docker/library/alpine:3.21.2 AS base
 
 RUN apk add \
         nginx \
@@ -36,6 +36,7 @@ ADD constraints.txt /usr/src/constraints.txt
 
 RUN python3 -m venv /usr/share/nginx/venv/
 RUN /usr/share/nginx/venv/bin/pip install --no-cache-dir --no-compile -r /usr/src/requirements.txt -c /usr/src/constraints.txt
+RUN /usr/share/nginx/venv/bin/pip freeze
 RUN cd /usr/share/nginx/venv/lib/python*/site-packages/ && rm -rf pip pip-* setuptools setuptools-*
 
 ADD create_certs.sh /usr/src/create_certs.sh
