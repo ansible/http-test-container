@@ -1,4 +1,4 @@
-FROM public.ecr.aws/docker/library/alpine:3.21.2 AS base
+FROM public.ecr.aws/docker/library/alpine:3.22.1 AS base
 
 RUN apk add \
         nginx \
